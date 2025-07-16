@@ -19,8 +19,14 @@ return new class extends Migration
             $table->decimal('amount_paid', 8, 2);
             $table->string('payment_method')->default('paypal');
             $table->string('transaction_id')->nullable();
+            $table->string('subscription_id')->nullable();
+            $table->date('expire_date')->nullable(); // <-- Add this line
+            $table->integer('validity_days')->nullable();
+            $table->string('status')->default('Active');
+            $table->text('paypal_data')->nullable();
             $table->timestamps();
         });
+
     }
 
     /**

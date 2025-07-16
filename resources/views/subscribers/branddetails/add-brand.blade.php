@@ -80,6 +80,7 @@
                     <label for="logo"><strong>* 6. Logo:</strong></label><br>
                     <input type="file" name="logo" id="logo" class="ml-4 p-1 w-full text-slate-500 text-sm rounded-full leading-6 file:bg-violet-200 file:text-violet-700 file:font-semibold
                 file:border-none file:px-4 file:py-1 file:mr-6 file:rounded-full hover:file:bg-violet-100 border border-gray-300">
+                <p>jpg,jpeg,png,svg,webp Only</p>
                 </div>
             </div>
             
@@ -107,7 +108,7 @@
                       <label for="brand_guide"><strong>* 9. Brand Guide:</strong></label><br>
                       <input type="file" name="brand_guide" id="brand_guide" class="ml-4 p-1 w-full text-slate-500 text-sm rounded-full leading-6 file:bg-violet-200 file:text-violet-700 file:font-semibold
                       file:border-none file:px-4 file:py-1 file:mr-6 file:rounded-full hover:file:bg-violet-100 border border-gray-300">
-                      
+                      <p>pdf,doc,docx only</p>
                   </div>
               </div>
           </div>
@@ -118,7 +119,7 @@
                   <label for="additional_assets"><strong>10. Additional Assets:</strong></label><br>
                   <input type="file" name="additional_assets" id="additional_assets" class="ml-4 p-1 w-full max-w-[450px] text-slate-500 text-sm rounded-full leading-6 file:bg-violet-200 file:text-violet-700 file:font-semibold
                       file:border-none file:px-4 file:py-1 file:mr-6 file:rounded-full hover:file:bg-violet-100 border border-gray-300">
-                  <p>Upload images, fonts, style guides, etc. to help our designers understand your brand better.</p>
+                  <p>Upload pdf,doc,docx. to help our designers understand your brand better.</p>
               </div>
           </div>
   

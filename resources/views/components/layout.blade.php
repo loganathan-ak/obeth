@@ -117,8 +117,9 @@
 
 
 </style>
-
+<meta name="csrf-token" content="{{ csrf_token() }}">
 @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/custom.js'])
+@livewireStyles
 </head>
 <body class="bg-gray-100">
 
@@ -133,6 +134,7 @@
 </div>
   <x-footer />
 
-
+  @include('sweetalert::alert')
+  @livewireScripts
 </body>
 </html>

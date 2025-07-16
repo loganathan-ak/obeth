@@ -10,11 +10,18 @@ use App\Http\Controllers\EnquiryController;
 use App\Http\Middleware\IsSubscriber;
 use App\Http\Middleware\IsSuperadmin;
 use App\Http\Middleware\IsAdmin;
+use App\Http\Middleware\IsQualitychecker;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AnnotationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PlansController;
+use App\Http\Controllers\CreditsUsageController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\QualityChecker;
+use App\Http\Controllers\ProjectzipController;
+use App\Http\Controllers\PreviewController;
+use App\Http\Controllers\OrderTemplateController;
 
 
 Route::get('/register', [RouteController::class, 'register'])->name('register');
@@ -22,17 +29,51 @@ Route::get('/login', [RouteController::class, 'login'])->name('login');
 Route::post('/login', [Authentication::class, 'userLogin']);
 Route::post('/register', [Authentication::class, 'userRegister']);
 Route::post('/logout', [Authentication::class, 'userLogout'])->name('logout');
+Route::get('/forgot-password', [Authentication::class, 'forgotPassword'])->name('forgot-password');
+Route::post('/forgot-password', [Authentication::class, 'sendNewPassword'])->name('password.update');
+
+Route::post('/save-preview', [PreviewController::class, 'store']);
+Route::get('/all-previews', [PreviewController::class, 'fetch']);
 
 
+Route::get('/credits-chart', [RouteController::class, 'creditChart'])->name('creditchart');
+
+
+
+Route::get('/search-job', [OrdersController::class, 'searchJob']);
+
+Route::get('/php-info', function () {
+    phpinfo();
+});
+
+/////////////in register times//////////
+Route::get('/paypal/create', [PaymentController::class, 'createPayment'])->name('create.payment');
+
+
+//////////////inside dashboard//////////////////////
 Route::post('/paypal/create', [PaymentController::class, 'createPayment'])->name('paypal.create');
+
+
 Route::get('/paypal/success', [PaymentController::class, 'paymentSuccess'])->name('paypal.success');
 Route::get('/paypal/cancel', [PaymentController::class, 'paymentCancel'])->name('paypal.cancel');
-Route::get('/plans', [PlansController::class, 'index'])->name('plans');
+Route::post('/credits-usage-store', [CreditsUsageController::class, 'store'])->name('credits-usage.store');
+Route::post('/credits-usage/{order}/approve', [CreditsUsageController::class, 'approve'])->name('credits-usage.approve');
+Route::delete('/credits-usage/{usage}', [CreditsUsageController::class, 'destroy'])->name('credits-usage.destroy');
+Route::post('/paypal/cancel-subscription', [PaymentController::class, 'cancelSubscription'])->name('paypal.cancel.subscription');
+
+Route::get('/order-templates/{id}', [OrderTemplateController::class, 'show']);
+
+Route::get('/projectzips/download/{id}', [ProjectZipController::class, 'download'])->name('projectzips.download');
+
+Route::get('/check-subscription/{id}', [PaymentController::class, 'checkSubscription']);
 
 
 Route::middleware([IsSubscriber::class])->group(function () {
+
     Route::get('/', [RouteController::class, 'home'])->name('subscribers.dashboard');
     Route::get('/billing', [RouteController::class, 'billing'])->name('billing');
+
+    Route::get('/plans', [PlansController::class, 'index'])->name('plans');
 
     //Brandprofile Routes
     Route::get('/brandprofile', [RouteController::class, 'brandProfile'])->name('brandprofile');
@@ -63,7 +104,6 @@ Route::middleware([IsSubscriber::class])->group(function () {
     Route::get('/users', [RouteController::class, 'users'])->name('users');
     Route::post('/submit-enquiry', [EnquiryController::class, 'store'])->name('submit.enquiry');
 
-
 });
 
 Route::post('/save-annotation', [AnnotationController::class, 'store'])->name('save.annotation');
@@ -84,6 +124,11 @@ Route::middleware([IsSuperadmin::class])->group(function (){
     Route::delete('/delete-admin/{id}', [SuperadminController::class, 'deleteAdmin'])->name('delete.admin');
     Route::get('/superadmin-enquires', [RouteController::class, 'superadminEnquires'])->name('superadmin.enquires');
     Route::get('/edit-order/{id}', [RouteController::class, 'editOrder'])->name('edit.order');
+    Route::get('/search-enquiry', [SuperadminController::class, 'searchEnquiry'])->name('superadmin.searchenquiry');
+    Route::post('/project-zip-upload', [ProjectzipController::class, 'projectZip'])->name('projects.upload');
+    Route::get('/user-search', [SuperadminController::class, 'userSearch'])->name('superadmin.usersearch');
+    Route::get('/transactions', [SuperadminController::class, 'transactions'])->name('superadmin.transactions');
+
 });
 
 
@@ -94,4 +139,45 @@ Route::middleware([IsAdmin::class])->group(function (){
     Route::get('/admin-vieworders/{id}', [AdminController::class, 'adminViewOrders'])->name('admin.vieworders');
     Route::get('/admin-editorders/{id}', [AdminController::class, 'adminEditOrders'])->name('admin.editorders');
     Route::put('/admin-editorders/{id}', [AdminController::class, 'updateOrder'])->name('admin.updateorders');
+    Route::post('/project-zip-upload', [ProjectzipController::class, 'projectZip'])->name('projects.upload');
+    Route::get('/admin-enquires', [AdminController::class, 'adminEnquires'])->name('admin.enquires');
+    Route::get('/admin-search-enquiry', [AdminController::class, 'adminSearchEnquires'])->name('admin.searchenquires');
+    Route::get('/admin-search-jobs', [AdminController::class, 'adminSearchjobs'])->name('admin.searchjobs');
+
 });
+
+
+Route::middleware(['auth'])->group(function () {
+    // Show profile page
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
+
+    // Update name/email
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    // Update password
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+});
+
+
+
+// Route::middleware([IsQualitychecker::class])->group(function () {
+
+//     Route::get('/qc-dashboard', [QualityChecker::class, 'dashboard'])->name('qc.dashboard');
+
+//     Route::get('/qc-orders', [QualityChecker::class, 'orders'])->name('qc.orders');
+
+//     Route::get('/qc-order/edit/{id}', [QualityChecker::class, 'ordersEdit'])->name('qc.ordersedit');
+
+//     Route::put('/qc-editorders/{id}', [AdminController::class, 'updateOrder'])->name('qc.updateorders');
+
+//     Route::get('/qc-vieworders/{id}', [QualityChecker::class, 'viewOrder'])->name('qc.vieworders');
+
+//     Route::post('/project-zip-upload', [ProjectzipController::class, 'projectZip'])->name('projects.upload');
+
+//     Route::get('/qc-list', [QualityChecker::class, 'qclist'])->name('qc.lists');
+
+//     Route::get('/qc-view-order/{id}', [QualityChecker::class, 'viewQcorders'])->name('qc.view');
+
+// });
+
+

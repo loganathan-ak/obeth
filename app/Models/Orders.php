@@ -7,9 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class Orders extends Model
 {
     protected $fillable = [
+        'order_id',
         'project_title',
         'request_type',
-        'other_request_type',
+        'sub_service',
         'instructions',
         'colors',
         'size',
@@ -25,6 +26,8 @@ class Orders extends Model
         'obeth_id',
         'assigned_to',
         'status',
+        'seen',
+        'other_color_format',
     ];
     
 }

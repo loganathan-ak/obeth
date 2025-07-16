@@ -14,6 +14,7 @@ class Plans extends Model
         'price',
         'description',
         'is_active',
+        'validity_days',
     ];
 
 }

@@ -13,16 +13,20 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-        
+            
+            $table->string('order_id')->nullable()->unique();
+
             $table->string('project_title');
             
             $table->string('request_type');
 
-            $table->string('other_request_type')->nullable();
+            $table->string('sub_service')->nullable();
         
             $table->text('instructions')->nullable();
 
             $table->string('colors')->nullable();
+
+            $table->string('other_color_format')->nullable();
         
             $table->string('size')->nullable();
 
@@ -48,7 +52,9 @@ return new class extends Migration
 
             $table->foreignId('assigned_to')->nullable();
         
-            $table->string('status')->default('pending'); // optional default
+            $table->string('status')->default('Pending'); // optional default
+
+            $table->boolean('seen')->default(false);
         
             $table->timestamps();
         });

@@ -7,7 +7,7 @@
         >
           <div>
             <h3 class="fw-bold mb-3">Dashboard</h3>
-            <h6 class="op-7 mb-2">Obeth Graphics Subscribers Dashboard</h6>
+            <h6 class="op-7 mb-2">Obeth Superadmin Dashboard</h6>
           </div>
         </div>
         <div class="row">
@@ -25,10 +25,19 @@
                     </div>
                   </div>
                   <div class="col col-stats ms-3 ms-sm-0">
-                    <div class="numbers">
-                      <p class="card-category">Total Orders</p>
-                      <h4 class="card-title">14</h4>
-                    </div>
+                   <div class="numbers">
+                      <p class="card-category flex items-center gap-2">
+                          Orders
+                          <select id="order-count-filter" class="form-select form-select-sm">
+                              <option value="all" selected>All-Time</option>
+                              <option value="week">This Week</option>
+                              <option value="month">This Month</option>
+                              <option value="year">This Year</option>
+                          </select>
+                      </p>
+                      <h4 class="card-title" id="order-count">{{ $ordersCount }}</h4>
+                  </div>
+
                   </div>
                 </div>
               </div>
@@ -39,20 +48,17 @@
               <div class="card-body">
                 <div class="row align-items-center">
                   <div class="col-icon">
-                    <div
-                      class="icon-big text-center icon-info bubble-shadow-small"
-                    >
+                    <div class="icon-big text-center icon-info bubble-shadow-small">
                       {{-- <i class="fas fa-user-check"></i> --}}
                       <svg class="w-12 h-12 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
                         <path fill-rule="evenodd" d="M4 4a1 1 0 0 1 1-1h14a1 1 0 1 1 0 2v14a1 1 0 1 1 0 2H5a1 1 0 1 1 0-2V5a1 1 0 0 1-1-1Zm5 2a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H9Zm5 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1h-1Zm-5 4a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H9Zm5 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1h-1Zm-3 4a2 2 0 0 0-2 2v3h2v-3h2v3h2v-3a2 2 0 0 0-2-2h-2Z" clip-rule="evenodd"/>
                       </svg>
-                      
                     </div>
                   </div>
                   <div class="col col-stats ms-3 ms-sm-0">
                     <div class="numbers">
                       <p class="card-category">Admins</p>
-                      <h4 class="card-title">10</h4>
+                      <h4 class="card-title">{{$adminsCount ?? 0}}</h4>
                     </div>
                   </div>
                 </div>
@@ -77,7 +83,7 @@
                   <div class="col col-stats ms-3 ms-sm-0">
                     <div class="numbers">
                       <p class="card-category">Users</p>
-                      <h4 class="card-title">50</h4>
+                      <h4 class="card-title">{{$subscribersCount ?? 0}}</h4>
                     </div>
                   </div>
                 </div>
@@ -98,7 +104,7 @@
                   <div class="col col-stats ms-3 ms-sm-0">
                     <div class="numbers">
                       <p class="card-category">Completed</p>
-                      <h4 class="card-title">18</h4>
+                      <h4 class="card-title">{{$completedProjects ?? 0}}</h4>
                     </div>
                   </div>
                 </div>
@@ -113,28 +119,7 @@
                 <div class="card-head-row card-tools-still-right">
                   <div class="card-title">Transaction History</div>
                   <div class="card-tools">
-                    <div class="dropdown">
-                      <button
-                        class="btn btn-icon btn-clean me-0"
-                        type="button"
-                        id="dropdownMenuButton"
-                        data-bs-toggle="dropdown"
-                        aria-haspopup="true"
-                        aria-expanded="false"
-                      >
-                        <i class="fas fa-ellipsis-h"></i>
-                      </button>
-                      <div
-                        class="dropdown-menu"
-                        aria-labelledby="dropdownMenuButton"
-                      >
-                        <a class="dropdown-item" href="#">Action</a>
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <a class="dropdown-item" href="#"
-                          >Something else here</a
-                        >
-                      </div>
-                    </div>
+                    <a href="{{route('superadmin.transactions')}}">View All</a>
                   </div>
                 </div>
               </div>
@@ -151,111 +136,19 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <th scope="row">
-                          <button
-                            class="btn btn-icon btn-round btn-success btn-sm me-2"
-                          >
-                            <i class="fa fa-check"></i>
-                          </button>
-                          Payment from #10231
-                        </th>
-                        <td class="text-end">Mar 19, 2020, 2.45pm</td>
-                        <td class="text-end">$250.00</td>
-                        <td class="text-end">
-                          <span class="badge badge-success">Completed</span>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th scope="row">
-                          <button
-                            class="btn btn-icon btn-round btn-success btn-sm me-2"
-                          >
-                            <i class="fa fa-check"></i>
-                          </button>
-                          Payment from #10231
-                        </th>
-                        <td class="text-end">Mar 19, 2020, 2.45pm</td>
-                        <td class="text-end">$250.00</td>
-                        <td class="text-end">
-                          <span class="badge badge-success">Completed</span>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th scope="row">
-                          <button
-                            class="btn btn-icon btn-round btn-success btn-sm me-2"
-                          >
-                            <i class="fa fa-check"></i>
-                          </button>
-                          Payment from #10231
-                        </th>
-                        <td class="text-end">Mar 19, 2020, 2.45pm</td>
-                        <td class="text-end">$250.00</td>
-                        <td class="text-end">
-                          <span class="badge badge-success">Completed</span>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th scope="row">
-                          <button
-                            class="btn btn-icon btn-round btn-success btn-sm me-2"
-                          >
-                            <i class="fa fa-check"></i>
-                          </button>
-                          Payment from #10231
-                        </th>
-                        <td class="text-end">Mar 19, 2020, 2.45pm</td>
-                        <td class="text-end">$250.00</td>
-                        <td class="text-end">
-                          <span class="badge badge-success">Completed</span>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th scope="row">
-                          <button
-                            class="btn btn-icon btn-round btn-success btn-sm me-2"
-                          >
-                            <i class="fa fa-check"></i>
-                          </button>
-                          Payment from #10231
-                        </th>
-                        <td class="text-end">Mar 19, 2020, 2.45pm</td>
-                        <td class="text-end">$250.00</td>
-                        <td class="text-end">
-                          <span class="badge badge-success">Completed</span>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th scope="row">
-                          <button
-                            class="btn btn-icon btn-round btn-success btn-sm me-2"
-                          >
-                            <i class="fa fa-check"></i>
-                          </button>
-                          Payment from #10231
-                        </th>
-                        <td class="text-end">Mar 19, 2020, 2.45pm</td>
-                        <td class="text-end">$250.00</td>
-                        <td class="text-end">
-                          <span class="badge badge-success">Completed</span>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th scope="row">
-                          <button
-                            class="btn btn-icon btn-round btn-success btn-sm me-2"
-                          >
-                            <i class="fa fa-check"></i>
-                          </button>
-                          Payment from #10231
-                        </th>
-                        <td class="text-end">Mar 19, 2020, 2.45pm</td>
-                        <td class="text-end">$250.00</td>
-                        <td class="text-end">
-                          <span class="badge badge-success">Completed</span>
-                        </td>
-                      </tr>
+                      @foreach($transactions as $transaction)
+                          <tr>
+                            <th scope="row">
+                              <button class="btn btn-icon btn-round btn-success btn-sm me-2">
+                                <i class="fa fa-check"></i>
+                              </button>
+                              {{$transaction->transaction_id}}
+                            </th>
+                            <td class="text-end">{{$transaction->created_at}}</td>
+                            <td class="text-end">${{$transaction->amount_paid}}</td>
+                            <td class="text-end"><span class="badge badge-success">Completed</span></td>
+                          </tr>
+                      @endforeach
                     </tbody>
                   </table>
                 </div>
@@ -263,51 +156,99 @@
             </div>
           </div>
           <div class="col-md-4">
-            <div class="card card-primary card-round">
-              <div class="card-header">
-                <div class="card-head-row">
-                  <div class="card-title">Daily Sales</div>
-                  <div class="card-tools">
-                    <div class="dropdown">
-                      <button
-                        class="btn btn-sm btn-label-light dropdown-toggle"
-                        type="button"
-                        id="dropdownMenuButton"
-                        data-bs-toggle="dropdown"
-                        aria-haspopup="true"
-                        aria-expanded="false"
-                      >
-                        Export
-                      </button>
-                      <div
-                        class="dropdown-menu"
-                        aria-labelledby="dropdownMenuButton"
-                      >
-                        <a class="dropdown-item" href="#">Action</a>
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <a class="dropdown-item" href="#"
-                          >Something else here</a
-                        >
-                      </div>
+            <div class="card rounded-2xl shadow-lg overflow-hidden border border-blue-100">
+                <!-- Header: Today + Total Sales -->
+                <div class="card-header bg-blue-50 p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                    <div>
+                        <h4 class="text-gray-800 text-sm font-semibold">Today Sales</h4>
+                        <p class="text-xs text-gray-500 mb-1">{{ \Carbon\Carbon::today()->format('d M Y') }}</p>
+                        <h2 class="text-2xl font-bold text-green-600">${{ number_format($todayTotal, 2) }}</h2>
                     </div>
-                  </div>
+                    <div class="border-l border-gray-300 pl-6">
+                        <h4 class="text-gray-800 text-sm font-semibold">Total Sales</h4>
+                        <p class="text-xs text-gray-500 mb-1">All Time</p>
+                        <h2 class="text-2xl font-bold text-blue-600">${{ number_format($totalSales, 2) }}</h2>
+                    </div>
                 </div>
-                <div class="card-category">March 25 - April 02</div>
-              </div>
-              <div class="card-body pb-0">
-                <div class="mb-4 mt-2">
-                  <h1>$4,578.58</h1>
+        
+                <!-- Chart Area -->
+                <div class="card-body bg-white px-5 pb-5 pt-3">
+                    <div class="relative h-[220px]">
+                        <canvas id="weeklySalesChart"></canvas>
+                    </div>
                 </div>
-                <div class="pull-in">
-                  <canvas id="dailySalesChart"></canvas>
-                </div>
-              </div>
             </div>
+        </div>
+        
+          
           </div>
         </div>
-        <div class="row">
-          
-        </div>
+
       </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+    const ctx = document.getElementById('weeklySalesChart').getContext('2d');
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {!! json_encode($weeklyLabels) !!}, // ['Mon', 'Tue', ...]
+            datasets: [{
+                label: 'Weekly Sales ($)',
+                data: {!! json_encode($weeklySales) !!},  // [100, 200, 150, ...]
+                fill: true,
+                borderColor: 'rgba(59, 130, 246, 1)', // blue-500
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                tension: 0.4,
+                pointRadius: 4,
+                pointBackgroundColor: 'rgba(59, 130, 246, 1)',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function (value) {
+                            return '$' + value;
+                        }
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function (context) {
+                            return '$' + context.parsed.y;
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+
+
+
+    const counts = {
+        all: {{ $ordersCount }},
+        week: {{ $weeklyOrders }},
+        month: {{ $monthlyOrders }},
+        year: {{ $yearlyOrders }}
+    };
+
+    document.getElementById('order-count-filter').addEventListener('change', function () {
+        const selected = this.value;
+        document.getElementById('order-count').textContent = counts[selected] ?? 0;
+    });
+
+      </script>
+      
   </x-layout>

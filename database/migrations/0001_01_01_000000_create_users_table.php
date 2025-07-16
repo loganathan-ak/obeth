@@ -13,16 +13,31 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            
+            // Replacing 'name' with more specific fields
+            $table->string('first_name');
+            $table->string('last_name')->nullable();
+            $table->string('mobile_number')->nullable();
+            $table->string('office_number')->nullable();
+            $table->string('country')->nullable();
+            $table->string('other_country')->nullable();
+            $table->text('address')->nullable();
+            $table->text('company_name')->nullable();
             $table->string('email')->unique();
             $table->string('obeth_id')->unique();
             $table->enum('role', ['subscriber', 'admin', 'superadmin'])->default('subscriber');
             $table->timestamp('email_verified_at')->nullable();
-            $table->integer('credits')->nullable();
+            $table->integer('credits')->default(0);
+            $table->unsignedBigInteger('designer_id')->nullable();
             $table->string('password');
+            $table->boolean('is_active')->default(false);
             $table->rememberToken();
             $table->timestamps();
+
+            // Self-referencing foreign key
+            $table->foreign('designer_id')->references('id')->on('users')->onDelete('set null');
         });
+
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();

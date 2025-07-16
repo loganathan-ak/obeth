@@ -37,7 +37,9 @@
                 <thead class="bg-gray-100 text-xs uppercase text-gray-600">
                     <tr>
                         <th class="px-6 py-3">S.no</th>
-                        <th class="px-6 py-3">Name</th>
+                        <th class="px-6 py-3">First Name</th>
+                        <th class="px-6 py-3">Last Name</th>
+                        <th class="px-6 py-3">Mobile</th>
                         <th class="px-6 py-3">Email</th>
                         <th class="px-6 py-3">Role</th>
                         <th class="px-6 py-3 text-right">Actions</th>
@@ -47,23 +49,15 @@
                     @forelse ($admins as $index => $admin)
                         <tr class="border-t hover:bg-gray-50">
                             <td class="px-6 py-4">{{ $index + 1 }}</td>
-                            <td class="px-6 py-4">{{ $admin->name }}</td>
+                            <td class="px-6 py-4">{{ $admin->first_name }}</td>
+                            <td class="px-6 py-4">{{ $admin->last_name }}</td>
+                            <td class="px-6 py-4">{{ $admin->mobile_number }}</td>
                             <td class="px-6 py-4">{{ $admin->email }}</td>
                             <td class="px-6 py-4 capitalize">{{ $admin->role }}</td>
                             <td class="px-6 py-4 text-right space-x-2">
                                 <a href="{{route('superadmin.editadmin', $admin->id)}}" class="inline-block px-3 py-2 text-xs text-white bg-yellow-500 rounded hover:bg-yellow-600">
                                     ✏️ Edit
                                 </a>
-                                <form action="{{ route('delete.admin', $admin->id) }}" method="POST" class="inline-block"
-                                    onsubmit="return confirm('Are you sure you want to delete this admin?')">
-                                  @csrf
-                                  @method('DELETE')
-                                  <button type="submit"
-                                          class="px-3 py-2 text-xs text-white bg-red-600 rounded hover:bg-red-700">
-                                      🗑️ Delete
-                                  </button>
-                              </form>
-                              
                             </td>
                         </tr>
                     @empty

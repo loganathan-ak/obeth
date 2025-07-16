@@ -144,7 +144,7 @@
                 <label for="status" class="form-label fw-semibold">Status</label>
                 <select name="status" id="status" class="form-select" required>
                     <option value="">Select Status</option>
-                    @foreach(['Pending', 'In Progress', 'Completed', 'Rejected'] as $status)
+                    @foreach(['Pending', 'In Progress', 'Completed', 'Cancelled'] as $status)
                         <option value="{{ $status }}" {{ $order->status == $status ? 'selected' : '' }}>{{ $status }}</option>
                     @endforeach
                 </select>

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('email');
             $table->string('phone');
             $table->string('subject');
+            $table->text('company_name')->nullable();
             $table->text('message')->nullable();
             $table->string('file')->nullable();
             $table->unsignedBigInteger('created_by');

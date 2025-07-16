@@ -77,16 +77,16 @@
                   <div class="col col-stats ms-3 ms-sm-0">
                     <div class="numbers">
                       <p class="card-category">Pending Projects</p>
-                      <h4 class="card-title">{{$pendingOrders ?? 0}}</h4>
+                      <h4 class="card-title">{{$pendingOrders->count() ?? 0}}</h4>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div class="col-sm-6 col-md-3">
+        <!--  <div class="col-sm-6 col-md-3">
             <div class="card card-stats card-round">
-              <div class="card-body">
+             <div class="card-body">
                 <div class="row align-items-center">
                   <div class="col-icon">
                     <div
@@ -104,9 +104,88 @@
                 </div>
               </div>
             </div>
+          </div> -->
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card card-round">
+              <div class="card-header">
+                <div class="card-head-row">
+                  <div class="card-title">Projects in ( Pending & In progress )</div>   
+                </div>
+              </div>
+              <div class="card-body flex justify-center">
+                <table class="min-w-full divide-y divide-gray-200 bg-white shadow-md rounded-lg">
+                  <thead class="bg-gray-100 text-xs font-semibold text-gray-700 uppercase">
+                      <tr>
+                        <th class="px-4 py-3 text-left">Job Id</th>
+                          <th class="px-4 py-3 text-left">Project Title</th>
+                          <th class="px-4 py-3 text-left">Request Type</th>
+                          <th class="px-4 py-3 text-left">Software</th>
+                          <th class="px-4 py-3 text-left">Created By</th>
+                          <th class="px-4 py-3 text-left">Assigned To</th>
+                          <th class="px-4 py-3 text-left">Rush</th>
+                          <th class="px-4 py-3 text-left">Status</th>
+                          <th class="px-4 py-3 text-left">Actions</th>
+                          <th class="px-4 py-3 text-left"></th>
+                      </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-200 text-sm text-gray-800" id="orders_table_body">
+                      @foreach($pendingOrders as $order)
+                            @php
+                                    // Choose background color based on status
+                                    $statusColor = match($order->status) {
+                                        'Pending'     => 'bg-yellow-100',
+                                        'In Progress' => 'bg-blue-100',
+                                        'Completed'   => 'bg-green-100',
+                                        'cancelled'   => 'bg-red-100',
+                                        default       => 'bg-gray-100',
+                                    };
+
+                                    // If unseen, override or append a light yellow shade
+                                    $seenHighlight = $order->seen ? '' : 'bg-yellow-50';
+                                @endphp
+
+                                <tr class="{{ $seenHighlight ?: $statusColor }}">
+                              <td class="px-4 py-2">{{ $order->order_id }}</td>
+                              <td class="px-4 py-2">{{ $order->project_title }}</td>
+                              <td class="px-4 py-2">{{ $order->request_type }}</td>
+                              <td class="px-4 py-2">{{ $order->software ?? '-' }}</td>
+                              <td class="px-4 py-2">{{ \App\Models\User::find($order->created_by)->first_name ?? '-' }}</td>
+                              <td class="px-4 py-2">{{ \App\Models\User::find($order->assigned_to)->first_name ?? 'N/A' }}</td>
+                              <td class="px-4 py-2">
+                                  @if($order->rush)
+                                      <span class="text-red-600 font-semibold">Yes</span>
+                                  @else
+                                      <span class="text-gray-500">No</span>
+                                  @endif
+                              </td>
+                              <td class="px-4 py-2">
+                                  <span class="text-blue-600 capitalize">{{ $order->status ?? 'pending' }}</span>
+                              </td>
+                              <td class="px-4 py-2 flex gap-3">
+                                  <a href="{{ route('admin.vieworders', $order->id) }}" class="text-indigo-600 hover:underline">View</a>
+                                  <a href="{{ route('admin.editorders', $order->id) }}" class="text-indigo-600 hover:underline">Edit</a>
+                              </td>
+                              <td class="px-4 py-2">
+                                  @if($order->seen)
+                                      <span class="text-green-600 text-xs font-medium">Seen</span>
+                                  @else
+                                      <span class="text-yellow-600 text-xs font-medium">Unseen</span>
+                                  @endif
+                              </td>
+
+                          </tr>
+                      @endforeach
+                  </tbody>
+              </table>
+                {{-- <div class="w-full max-w-xl px-4">
+                  <canvas id="myChart" class="w-full h-auto"></canvas>
+                </div> --}}
+              </div>        
+            </div>
           </div>
         </div>
-
 
 
       </div>

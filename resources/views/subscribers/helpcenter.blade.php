@@ -91,7 +91,10 @@
 
             <input class="form-control" type="email" name="email" placeholder="Email" value="{{ old('email') }}" required>
 
-            <input class="form-control" type="tel" name="phone" placeholder="Phone" value="{{ old('phone') }}" required>
+           <input class="form-control" type="tel" name="phone" placeholder="Phone" value="{{ old('phone') }}" required pattern="[0-9]*" inputmode="numeric"
+              oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+
+           <input class="form-control" type="text" name="company_name" placeholder="Company Name" value="{{ old('company_name') }}" required>
 
             <input class="form-control" type="text" name="subject" placeholder="Subject" value="{{ old('subject') }}" required>
 

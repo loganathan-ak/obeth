@@ -3,8 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Plans;
 
-class transactions extends Model
+class Transactions extends Model
 {
 
     protected $fillable = [
@@ -14,6 +15,15 @@ class transactions extends Model
         'amount_paid',
         'payment_method',
         'transaction_id',
+        'validity_days',
+        'expire_date',
+        'status',
+        'paypal_data',
+        'subscription_id',
     ];
+
+
+
+    
 
 }

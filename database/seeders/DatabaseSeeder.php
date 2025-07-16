@@ -23,24 +23,31 @@ class DatabaseSeeder extends Seeder
 
         Plans::create([
             'name' => 'Basic',
+            'plan_id' => 'P-6EU22970K9178944PNBBQANY',
             'credits' => 100,
             'price' => 9.99,
             'description' => 'Starter credits',
+            'validity_days' => 30,
         ]);
-        
+
         Plans::create([
             'name' => 'Standard',
+            'plan_id' => 'P-6EU22970K9178944PNBBQANY',
             'credits' => 250,
             'price' => 19.99,
             'description' => 'More value for your money',
+            'validity_days' => 60,
         ]);
-        
+
         Plans::create([
             'name' => 'Premium',
+            'plan_id' => 'P-6EU22970K9178944PNBBQANY',
             'credits' => 500,
             'price' => 34.99,
             'description' => 'Best for power users',
+            'validity_days' => 90,
         ]);
+
         
     }
 }

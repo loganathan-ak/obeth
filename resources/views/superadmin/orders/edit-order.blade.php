@@ -28,16 +28,26 @@
             </div>
 
             <!-- Request Type -->
-            <div class="mb-3">
-                <label for="request_type" class="form-label fw-semibold">Type of Request *</label>
-                <select class="form-select" id="request_type" name="request_type" required>
-                    <option value="">Select Type</option>
-                    @foreach(['Banner Creation', 'Image Editing', 'Background Removal', 'Flyer Design', 'Logo Design', 'Social Media Post', 'Infographics', 'Mockups', 'Brochure', 'Packaging Design', 'Business Card', 'Other'] as $type)
-                        <option value="{{ $type }}" {{ $order->request_type == $type ? 'selected' : '' }}>{{ $type }}</option>
-                    @endforeach
-                </select>
-                <input type="text" name="other_request_type" id="other_request_type" class="form-control collapse input-toggle" value="{{ old('other_request_type', $order->other_request_type) }}" placeholder="Enter your request" />
+            <div class="flex gap-x-5">
+                <div class="mb-3 w-full">
+                    <label for="request_type" class="form-label fw-semibold">Select Service*</label>
+                    <select class="form-select" id="request_type" name="request_type" required>
+                        <option value="">Select Type</option>
+                        {{-- JS will populate options --}}
+                    </select>
+                </div>
+                
+                <div class="mb-3 w-full">
+                    <label for="sub_service" class="form-label fw-semibold">Select Sub Service*</label>
+                    <select class="form-select" id="sub_service" name="sub_service">
+                        <option value="">Select Sub Type</option>
+                        {{-- JS will populate options --}}
+                    </select>
+                </div>
             </div>
+            {{-- For JS to access old values --}}
+            <input type="hidden" id="old_request_type" value="{{ old('request_type', $order->request_type) }}">
+            <input type="hidden" id="old_sub_service" value="{{ old('sub_service', $order->sub_service) }}">
 
             <!-- Instructions (Rich Text) -->
             <div class="mb-3">
@@ -116,14 +126,38 @@
             <div class="mb-3">
                 <label for="reference_files" class="form-label fw-semibold">Upload Reference Files</label>
                 <input class="form-control" type="file" name="reference_files[]" id="reference_files" multiple>
+            
                 @if($order->reference_files)
-                    <ul class="list-unstyled mt-2">
+                    <div class="mt-3 d-flex flex-wrap gap-3">
                         @foreach(json_decode($order->reference_files) as $file)
-                            <li><a href="{{ asset('storage/' . $file->path) }}" target="_blank" class="text-primary">{{ $file->original_name }}</a></li>
+                            @php
+                                $extension = pathinfo($file->original_name, PATHINFO_EXTENSION);
+                                $isImage = in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'webp']);
+                            @endphp
+            
+                            @if($isImage)
+                                <div style="width: 150px; position: relative;">
+                                    <img src="{{ asset('storage/' . $file->path) }}" 
+                                         alt="{{ $file->original_name }}" 
+                                         class="img-thumbnail" 
+                                         style="max-width: 100%; max-height: 150px;">
+                                    <small class="d-block text-truncate mt-1">{{ $file->original_name }}</small>
+                                </div>
+                            @else
+                                <div style="width: 150px;">
+                                    <a href="{{ asset('storage/' . $file->path) }}" 
+                                       target="_blank" 
+                                       class="btn btn-sm btn-outline-primary w-100">
+                                        View {{ strtoupper($extension) }}
+                                    </a>
+                                    <small class="d-block text-truncate mt-1">{{ $file->original_name }}</small>
+                                </div>
+                            @endif
                         @endforeach
-                    </ul>
+                    </div>
                 @endif
             </div>
+            
 
             <!-- Rush Request -->
             <div class="form-check mb-3">
@@ -138,12 +172,16 @@
             <!-- Requested By -->
         <div class="mb-3">
             <label for="user_id" class="form-label fw-semibold">Requested By</label>
-            <input type="text" class="form-control" value="{{$subscribers->where('id', $order->created_by)->first()->name ?? 'N/A' }}" disabled>
+            @php
+            $subscriber = $subscribers->where('id', $order->created_by)->first();
+            $fullName = $subscriber->first_name . ' ' . $subscriber->last_name;
+            @endphp
+            <input type="text" class="form-control" value="{{$fullName ?? 'N/A' }}" disabled>
             <input type="hidden" name="user_id" value="{{ $order->created_by }}">
         </div>
 
         <!-- Assign To Admin -->
-        <div class="mb-3">
+        {{-- <div class="mb-3">
             <label for="assigned_to" class="form-label fw-semibold">Assign To</label>
             <select name="assigned_to" id="assigned_to" class="form-select">
                 <option value="">Select Admin</option>
@@ -153,7 +191,7 @@
                     </option>
                 @endforeach
             </select>
-        </div>
+        </div> --}}
 
             <!-- Submit -->
             <div class="text-end">
@@ -184,5 +222,296 @@
                 }
             });
         });
+
+
+
+
+
+////////////////////////////////////////////
+
+
+
+const serviceMap = {
+  "Logo and Branding": [
+    "Logo Design",
+    "Logo & Brand Identity Pack",
+    "Logo & Business",
+    "Typography Design",
+    "Watermark",
+    "Label Design",
+    "Brand Guidelines",
+    "Business Card Design",
+    "Business Card Update",
+    "Stationery Design",
+    "Poster Design",
+    "Sticker Design",
+    "Coupon Design",
+    "Leaflet Design",
+    "Logo & Brand Guide",
+    "Logo & Product Packaging",
+    "Corporate Logo Update",
+    "Minimalist Logo Design",
+    "Vintage Logo Design",
+    "2D Logo Mockups",
+    "Email Template Design",
+    "PowerPoint Presentation"
+  ],
+  "Embroidery Digitizing": [
+    "Underlay for Embroidery Digitizing",
+    "Embroidered Patch Designs",
+    "Left Chest Digitizing",
+    "Right Chest Digitizing",
+    "Sleeve Digitizing",
+    "Full Front Digitizing",
+    "Full Back Digitizing",
+    "Hoodie Digitizing",
+    "Shirt Digitizing",
+    "Hat Digitizing",
+    "Cap Digitizing",
+    "Bag Digitizing",
+    "Pant Digitizing",
+    "Polo T-shirt Digitizing",
+    "Apron Digitizing",
+    "Custom Embroidery Digitizing",
+    "3D Puff Digitizing",
+    "Cross Stitch Embroidery Digitizing",
+    "Satin Stitch Embroidery Digitizing"
+  ],
+  "Web & Digital Design": [
+    "Blog Graphics",
+    "Slider Images",
+    "Digital Business Cards",
+    "Landing Page Design",
+    "Banner Ad Design",
+    "E-commerce Mockup"
+  ],
+  "Print & Promotional Materials": [
+    "Flyer Design",
+    "Infographic Design",
+    "Brochure Design",
+    "Invoice Template Design",
+    "Gift Certificate Design",
+    "Thank You Cards",
+    "Invitations",
+    "Business Reports Layouts",
+    "Press Kit Design",
+    "Corporate Stationery Design",
+    "Resume Design",
+    "Presentation Design",
+    "Catalogue Design",
+    "Newspaper Ad Design",
+    "Roll-Up Banner Design",
+    "Postcard Design",
+    "Personalized Gift Design",
+    "Quote Graphic Design",
+    "Calendar Design",
+    "Booklet Design",
+    "Large Format Print Design",
+    "Magazine Design",
+    "Print-Ready Artwork",
+    "Car, Truck, & Van Wraps",
+    "Signage Design",
+    "Marketing Graphics",
+    "Menu Design",
+    "Slide Decks",
+    "Album Cover Design",
+    "Podcast Cover Art",
+    "Presentation Decks",
+    "Webinar Presentation Slides",
+    "Annual Report Design",
+    "Branded Letterhead Design",
+    "Corporate Email Signatures",
+    "Presentation Infographics"
+  ],
+  "Clothing & Merchandise": [
+    "T-Shirt Design",
+    "Clothing & Apparel Graphics",
+    "Merchandise Design",
+    "Mug & Cup Design",
+    "Popsocket Design",
+    "Bag & Tote Design",
+    "Hat & Cap Design",
+    "Pullover & Hoodie Design",
+    "Labels Design",
+    "Sweatshirt Graphics",
+    "Sportswear Graphics",
+    "Band Merch Design",
+    "Limited Edition Merch",
+    "Eco-friendly Merch Design",
+    "Socks & Footwear Graphics",
+    "Uniform Branding",
+    "Custom Print Design",
+    "Swimwear Graphics",
+    "Apron Designs",
+    "Workwear Branding",
+    "Seasonal Merch Design",
+    "Personalized Clothing Prints",
+    "Jersey Design"
+  ],
+  "Packaging & Label Design": [
+    "Product Packaging Design",
+    "Product Label Design",
+    "Food Packaging",
+    "Beverage Label Design",
+    "Cosmetic Packaging",
+    "Tech Product Packaging",
+    "Medicine & Pharmaceutical Labels",
+    "Minimalist Packaging",
+    "Name Badge Design",
+    "Subscription Box Packaging",
+    "Gift Box Design",
+    "Luxury Packaging Design",
+    "Branded Shopping Bags",
+    "Seasonal Packaging Themes",
+    "Box Packaging Design",
+    "Bag Printing Design",
+    "Die-Cut Packaging Design",
+    "Juice Label & Packaging Design",
+    "Hologram Sticker Design",
+    "Hang Tag Design"
+  ],
+  "Art & Illustration": [
+    "Custom Illustrations",
+    "Image to Vector Art",
+    "Color Separation",
+    "Template Placing",
+    "Form Typeset",
+    "Card & Invitation Design",
+    "Character & Mascot Design",
+    "Tattoo Design",
+    "Icon Design",
+    "Album Art",
+    "Custom Infographics",
+    "Digital Painting",
+    "Portraits & Caricatures",
+    "Watercolor Art",
+    "Vector Artwork",
+    "Pattern Design",
+    "Children's Book Illustrations",
+    "Pop Art & Retro Graphics",
+    "Architectural Graphics",
+    "Book Cover Design",
+    "E-Book Cover Design",
+    "DVD/CD Cover Design",
+    "Journal & Notebook Cover Design",
+    "Line Art Design",
+    "Mockups",
+    "Product Mockups",
+    "Neon Sign Mockup",
+    "NFT Artwork Creation"
+  ],
+  "Social Media Content": [
+    "Facebook Ads",
+    "Facebook Post Design",
+    "Facebook Cover Photo",
+    "Facebook Story Graphics",
+    "Facebook Event Cover Designs",
+    "InstagramAds",
+    "Instagram Post Design",
+    "Instagram Story Design",
+    "LinkedIn Post Design",
+    "LinkedIn Banner Designs",
+    "YouTube Video Thumbnails",
+    "YouTube Channel Art",
+    "YouTube End Screens",
+    "Twitter Post Design",
+    "Twitter Header Graphics",
+    "Carousel Ad Design",
+    "Advertisement Design",
+    "WhatsApp Story Designs",
+    "Pinterest Pin Design",
+    "Social Media Advertisements"
+  ],
+  "Digital Advertisement": [
+    "Digital Display Ads",
+    "Influencer Media Kits",
+    "Web Banner Design",
+    "Tech Explainer Graphics",
+    "Online Banner",
+    "Google Display Ads Design",
+    "Event Ticket Design"
+  ],
+  "Digital Enhancements & Image Editing": [
+    "Image Retouching",
+    "Image Editing",
+    "2D Graphics for Mobile Apps",
+    "Overlays for Streaming",
+    "Photo Enhancement",
+    "Shadow and Reflection Creation",
+    "Image Background Removal",
+    "Product Background Removal",
+    "Clipping Path",
+    "Color Correction",
+    "Image Masking",
+    "Photo Manipulation",
+    "Virtual Staging"
+  ],
+  "Exhibition & Display Graphics": [
+    "Exhibition Booth Graphics",
+    "Jumbotron Display Graphics",
+    "Hoarding/Billboard Design",
+    "Kiosk Display Design",
+    "Office Branding Graphics",
+    "Door Hanger Design"
+  ],
+  "Unique & Custom Creations": [
+    "Concept Art",
+    "Concept Illustration",
+    "Promotional Product Design",
+    "Trend-Based Graphics",
+    "Unique Branding Icons",
+    "Minimalist Business Branding",
+    "Community Engagement Graphics",
+    "QR Code Design",
+    "Apparel Design",
+    "Keychain Design",
+    "Fabric Print Design",
+    "Heat Press Transfer Graphics",
+    "Helmet Wrap Design"
+  ],
+  "Additional Services": [
+    "Photo Realistic Mockups",
+    "Branded Merchandise Packaging",
+    "Seasonal Promotion Graphics"
+  ]
+};
+
+const mainSelect = document.getElementById('request_type');
+    const subSelect = document.getElementById('sub_service');
+
+    const oldMain = document.getElementById('old_request_type').value;
+    const oldSub = document.getElementById('old_sub_service').value;
+
+    function populateMainDropdown() {
+        Object.keys(serviceMap).forEach(service => {
+            const option = document.createElement('option');
+            option.value = service;
+            option.textContent = service;
+            if (service === oldMain) option.selected = true;
+            mainSelect.appendChild(option);
+        });
+    }
+
+    function populateSubDropdown(mainValue) {
+        subSelect.innerHTML = '<option value="">Select Sub Type</option>';
+        if (serviceMap[mainValue]) {
+            serviceMap[mainValue].forEach(sub => {
+                const option = document.createElement('option');
+                option.value = sub;
+                option.textContent = sub;
+                if (sub === oldSub) option.selected = true;
+                subSelect.appendChild(option);
+            });
+        }
+    }
+
+    // On change of main select
+    mainSelect.addEventListener('change', function () {
+        populateSubDropdown(this.value);
+    });
+
+    // On page load
+    populateMainDropdown();
+    populateSubDropdown(oldMain);
     </script>
 </x-layout>

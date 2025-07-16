@@ -5,7 +5,13 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Orders;
 use App\Models\User;
+use App\Models\Enquiry;
+use App\Models\Notifications;
+use App\Models\Transactions;
+use App\Models\CreditsUsage;
+use App\Models\Plans;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 
 class SuperadminController extends Controller
@@ -14,20 +20,25 @@ class SuperadminController extends Controller
     public function createAdmin(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6',
-            'role' => 'required|in:admin,superadmin',
+            'first_name' => 'required|string|max:255',
+            'last_name'  => 'required|string|max:255',
+            'mobile'     => 'required|string|max:15',
+            'email'      => 'required|email|unique:users,email',
+            'password'   => 'required|string|min:6',
+            'role'       => 'required|in:admin,superadmin,qualitychecker',
         ]);
+        
     
         $latestId = User::max('obeth_id');
         $nextNumber = $latestId ? intval(str_replace('OBE-', '', $latestId)) + 1 : 1000;
     
         User::create([
-            'name'     => $validated['name'],
-            'email'    => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'role'     => $validated['role'],
+            'first_name' => $validated['first_name'],
+            'last_name'  => $validated['last_name'],
+            'mobile_number' => $validated['mobile'],
+            'email'      => $validated['email'],
+            'password'   => Hash::make($validated['password']),
+            'role'       => $validated['role'],
             'obeth_id' => 'OBE-' . $nextNumber,
         ]);
     
@@ -61,9 +72,8 @@ class SuperadminController extends Controller
             'brand_profile_id' => 'nullable|exists:brands_profiles,id',
             'formats' => 'nullable|array',
             'pre_approve' => 'nullable|numeric|min:0',
-            'reference_files.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,ai,psd,eps|max:10240',
+            'reference_files.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,ai,psd,eps,svg|max:102400',
             'rush' => 'nullable',
-            'assigned_to' => 'required',
         ]);
     
         $order = Orders::findOrFail($id);
@@ -103,8 +113,16 @@ class SuperadminController extends Controller
             'pre_approve' => $validated['pre_approve'] ?? null,
             'reference_files' => !empty($uploadedFiles) ? json_encode($uploadedFiles) : $order->reference_files,
             'rush' => $rush,
-            'assigned_to' => $validated['assigned_to'],
         ]);
+
+        Notifications::create([
+            'created_by' => Auth::user()->id,
+            'client_id'  => $order->created_by,
+            'message'    => "Your job \"{$order->project_title}\" has been updated.",
+            'purpose'    => 'status',
+            'order_id'   => $order->id,
+        ]);
+        
     
         return redirect()->route('superadmin.orders')->with('success', 'Order updated successfully.');
     }
@@ -115,31 +133,109 @@ class SuperadminController extends Controller
         return view('superadmin.admins.edit-admin', compact('admin'));
     }
 
-    public function updateAdmin(Request $request, $id)
-{
-    $admin = User::findOrFail($id); // Assuming you're using the User model
+        public function updateAdmin(Request $request, $id)
+    {
+        $admin = User::findOrFail($id); // Assuming you're using the User model
 
-    $validated = $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|max:255|unique:users,email,' . $admin->id,
-        'password' => 'nullable|string|min:6',
-        'role' => 'required|in:admin,superadmin',
-    ]);
+        $validated = $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name'  => 'required|string|max:255',
+            'mobile'     => 'required|string|max:15',
+            'email' => 'required|email|max:255|unique:users,email,' . $admin->id,
+            'password' => 'nullable|string|min:6',
+            'role' => 'required|in:admin,superadmin',
+        ]);
 
-    $admin->name = $validated['name'];
-    $admin->email = $validated['email'];
-    $admin->role = $validated['role'];
+        // Update individual fields
+        $admin->first_name = $validated['first_name'];
+        $admin->last_name  = $validated['last_name'];
+        $admin->mobile_number     = $validated['mobile'];
+        $admin->email = $validated['email'];
+        $admin->role = $validated['role'];
 
-    // Update password only if filled
-    if (!empty($validated['password'])) {
-        $admin->password = bcrypt($validated['password']);
+        // Update password only if filled
+        if (!empty($validated['password'])) {
+            $admin->password = bcrypt($validated['password']);
+        }
+
+        $admin->save();
+
+        return redirect()->route('superadmin.admins')->with('success', 'Admin updated successfully.');
     }
 
-    $admin->save();
 
-    return redirect()->route('superadmin.admins')->with('success', 'Admin updated successfully.');
-}
 
+
+    public function searchEnquiry(Request $request)
+    {
+        $query = $request->input('query');
+
+        $enquiries = Enquiry::where('name', 'like', "%{$query}%")
+                            ->orWhere('email', 'like', "%{$query}%")
+                            ->orWhere('phone', 'like', "%{$query}%")
+                            ->get();
+
+        return response()->json([
+            'enquiries' => $enquiries,
+        ]);
+    }
+
+
+
+    public function userSearch(Request $request)
+    {
+        $query = $request->query('query');
+
+        $subscribers = User::where('role', 'subscriber')
+            ->where(function ($q) use ($query) {
+                $q->where('first_name', 'like', "%{$query}%")
+                ->orWhere('last_name', 'like', "%{$query}%")
+                ->orWhere('email', 'like', "%{$query}%")
+                ->orWhere('mobile_number', 'like', "%{$query}%");
+            })
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'subscribers' => $subscribers,
+        ]);
+    }
+
+
+
+
+
+    public function transactions(Request $request){
+        $query = Transactions::query();
+    
+        // Date filters
+        if ($request->filled('from_date') && $request->filled('to_date')) {
+            $query->whereBetween('created_at', [
+                Carbon::parse($request->from_date)->startOfDay(),
+                Carbon::parse($request->to_date)->endOfDay()
+            ]);
+        } elseif ($request->filled('from_date')) {
+            $query->where('created_at', '>=', Carbon::parse($request->from_date)->startOfDay());
+        } elseif ($request->filled('to_date')) {
+            $query->where('created_at', '<=', Carbon::parse($request->to_date)->endOfDay());
+        }
+    
+        // User filter
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
+    
+        // Clone the query before pagination for totals
+        $totalsQuery = clone $query;
+        $totalCredits = $totalsQuery->sum('credits_purchased');
+        $totalAmount = $totalsQuery->sum('amount_paid');
+    
+        $transactions = $query->latest()->paginate(20);
+        $users = User::where('role', 'subscriber')->get();
+        $plans = Plans::all();
+    
+        return view('superadmin.transactions', compact('transactions', 'users', 'plans', 'totalCredits', 'totalAmount'));
+    }
     
 
 }

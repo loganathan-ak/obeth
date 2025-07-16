@@ -15,5 +15,6 @@ class Enquiry extends Model
         'file',
         'created_by',
         'obeth_id',
+        'company_name',
     ];
 }

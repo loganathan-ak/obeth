@@ -17,13 +17,13 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
+
     protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'obeth_id',
-        'role',
-    ];
+    'first_name', 'last_name', 'mobile_number', 'country', 'other_country',
+    'email', 'password', 'obeth_id', 'designer_id','role', 'office_number',
+    'company_name', 'credits', 'address', 'is_active',
+     ];
+
 
     /**
      * The attributes that should be hidden for serialization.
@@ -47,4 +47,16 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+
+// app/Models/User.php
+
+public function latestTransaction()
+{
+    return $this->hasOne(\App\Models\Transactions::class, 'user_id')
+                ->latestOfMany(); // gets the latest record by created_at
+}
+
+    
+
 }
